@@ -8,9 +8,10 @@ import categoryService from '@/services/api/categoryService';
 import taskService from '@/services/api/taskService';
 
 const Today = () => {
-  const [categories, setCategories] = useState([]);
+const [categories, setCategories] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [todayStats, setTodayStats] = useState({ total: 0, completed: 0 });
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
 
   useEffect(() => {
     loadCategories();
@@ -48,7 +49,11 @@ const Today = () => {
   };
 
   const handleTaskUpdate = () => {
-    setRefreshTrigger(prev => prev + 1);
+setRefreshTrigger(prev => prev + 1);
+  };
+
+  const handleTaskSelect = (task) => {
+    setSelectedTaskId(task?.Id || null);
   };
 
   // Filter for today's tasks
@@ -119,10 +124,12 @@ const Today = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <TaskList
+<TaskList
           filters={todayFilters}
           onTaskUpdate={handleTaskUpdate}
           refreshTrigger={refreshTrigger}
+          selectedTaskId={selectedTaskId}
+          onTaskSelect={handleTaskSelect}
         />
       </motion.div>
     </motion.div>

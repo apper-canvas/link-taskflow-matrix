@@ -6,9 +6,10 @@ import TaskList from '@/components/organisms/TaskList';
 import categoryService from '@/services/api/categoryService';
 
 const Home = () => {
-  const [categories, setCategories] = useState([]);
+const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState({ view: 'active' });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
 
   useEffect(() => {
     loadCategories();
@@ -28,7 +29,11 @@ const Home = () => {
   };
 
   const handleTaskUpdate = () => {
-    setRefreshTrigger(prev => prev + 1);
+setRefreshTrigger(prev => prev + 1);
+  };
+
+  const handleTaskSelect = (task) => {
+    setSelectedTaskId(task?.Id || null);
   };
 
   return (
@@ -87,10 +92,12 @@ const Home = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <TaskList
+<TaskList
           filters={filters}
           onTaskUpdate={handleTaskUpdate}
           refreshTrigger={refreshTrigger}
+          selectedTaskId={selectedTaskId}
+          onTaskSelect={handleTaskSelect}
         />
       </motion.div>
     </motion.div>

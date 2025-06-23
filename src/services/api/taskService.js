@@ -20,7 +20,7 @@ const taskService = {
     return { ...task };
   },
 
-  async create(taskData) {
+async create(taskData) {
     await delay(400);
     const newTask = {
       ...taskData,
@@ -28,28 +28,61 @@ const taskService = {
       completed: false,
       completedAt: null,
       createdAt: new Date().toISOString(),
-      order: tasks.length + 1
+      order: tasks.length + 1,
+      editHistory: [{
+        timestamp: new Date().toISOString(),
+        action: 'created',
+        changes: Object.keys(taskData).map(key => ({
+          field: key,
+          newValue: taskData[key],
+          oldValue: null
+        }))
+      }]
     };
     tasks.push(newTask);
     return { ...newTask };
   },
 
-  async update(id, updates) {
+async update(id, updates) {
     await delay(300);
     const index = tasks.findIndex(t => t.Id === parseInt(id, 10));
     if (index === -1) {
       throw new Error('Task not found');
     }
     
+    const originalTask = tasks[index];
     const updatedTask = { 
-      ...tasks[index], 
+      ...originalTask, 
       ...updates,
-      Id: tasks[index].Id // Prevent Id modification
+      Id: originalTask.Id // Prevent Id modification
     };
     
     // Handle completion status
     if (updates.completed !== undefined) {
       updatedTask.completedAt = updates.completed ? new Date().toISOString() : null;
+    }
+    
+    // Track edit history
+    const changes = [];
+    Object.keys(updates).forEach(key => {
+      if (key !== 'Id' && originalTask[key] !== updates[key]) {
+        changes.push({
+          field: key,
+          oldValue: originalTask[key],
+          newValue: updates[key]
+        });
+      }
+    });
+    
+    if (changes.length > 0) {
+      updatedTask.editHistory = [
+        ...(originalTask.editHistory || []),
+        {
+          timestamp: new Date().toISOString(),
+          action: 'updated',
+          changes
+        }
+      ];
     }
     
     tasks[index] = updatedTask;
@@ -97,8 +130,14 @@ const taskService = {
       if (task) {
         task.order = index + 1;
       }
-    });
+});
     return [...tasks];
+  },
+
+  async getEditHistory(id) {
+    await delay(200);
+    const task = tasks.find(t => t.Id === parseInt(id, 10));
+    return task ? (task.editHistory || []) : [];
   }
 };
 

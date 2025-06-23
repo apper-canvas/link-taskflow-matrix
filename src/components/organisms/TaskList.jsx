@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskCard from '@/components/molecules/TaskCard';
+import TaskDetailSidebar from '@/components/molecules/TaskDetailSidebar';
 import SkeletonLoader from '@/components/molecules/SkeletonLoader';
 import EmptyState from '@/components/molecules/EmptyState';
 import ErrorState from '@/components/molecules/ErrorState';
 import { toast } from 'react-toastify';
 import taskService from '@/services/api/taskService';
 import categoryService from '@/services/api/categoryService';
-
 const TaskList = ({ 
   filters = {}, 
   onTaskUpdate,
   refreshTrigger = 0,
+  selectedTaskId,
+  onTaskSelect,
   className = '' 
 }) => {
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     loadData();
     loadCategories();
@@ -188,16 +189,38 @@ const TaskList = ({
             transition={{ delay: index * 0.05 }}
             layout
           >
-            <TaskCard
+<TaskCard
               task={task}
               category={getCategoryById(task.categoryId)}
               onUpdate={handleTaskUpdate}
               onDelete={handleTaskDelete}
+              onSelect={onTaskSelect}
               className="group"
             />
           </motion.div>
-        ))}
+))}
       </AnimatePresence>
+
+      {/* Task Detail Sidebar */}
+      <TaskDetailSidebar
+        task={selectedTaskId ? tasks.find(t => t.Id === selectedTaskId) : null}
+        isOpen={!!selectedTaskId}
+        onClose={() => onTaskSelect?.(null)}
+        onUpdate={handleTaskUpdate}
+        onDelete={handleTaskDelete}
+        onNavigate={(direction) => {
+          const currentIndex = filteredTasks.findIndex(t => t.Id === selectedTaskId);
+          let newIndex;
+          
+          if (direction === 'prev') {
+            newIndex = currentIndex > 0 ? currentIndex - 1 : filteredTasks.length - 1;
+          } else {
+            newIndex = currentIndex < filteredTasks.length - 1 ? currentIndex + 1 : 0;
+          }
+          
+          onTaskSelect?.(filteredTasks[newIndex]);
+        }}
+      />
     </div>
   );
 };

@@ -8,10 +8,11 @@ import categoryService from '@/services/api/categoryService';
 import taskService from '@/services/api/taskService';
 
 const All = () => {
-  const [categories, setCategories] = useState([]);
+const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState({ view: 'all' });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [allStats, setAllStats] = useState({ total: 0, completed: 0 });
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
 
   useEffect(() => {
     loadCategories();
@@ -45,8 +46,12 @@ const All = () => {
 
   const handleTaskUpdate = () => {
     setRefreshTrigger(prev => prev + 1);
+setRefreshTrigger(prev => prev + 1);
   };
 
+  const handleTaskSelect = (task) => {
+    setSelectedTaskId(task?.Id || null);
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -122,10 +127,12 @@ const All = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
-        <TaskList
+<TaskList
           filters={filters}
           onTaskUpdate={handleTaskUpdate}
           refreshTrigger={refreshTrigger}
+          selectedTaskId={selectedTaskId}
+          onTaskSelect={handleTaskSelect}
         />
       </motion.div>
     </motion.div>
