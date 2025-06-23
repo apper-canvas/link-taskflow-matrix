@@ -1,0 +1,30 @@
+[
+  {
+    "Id": 1,
+    "name": "Work",
+    "color": "#5B4CFF",
+    "icon": "Briefcase",
+    "taskCount": 2
+  },
+  {
+    "Id": 2,
+    "name": "Meetings",
+    "color": "#FF6B6B",
+    "icon": "Users",
+    "taskCount": 2
+  },
+  {
+    "Id": 3,
+    "name": "Development",
+    "color": "#4ECDC4",
+    "icon": "Code",
+    "taskCount": 1
+  },
+  {
+    "Id": 4,
+    "name": "Personal",
+    "color": "#51CF66",
+    "icon": "User",
+    "taskCount": 0
+  }
+]
